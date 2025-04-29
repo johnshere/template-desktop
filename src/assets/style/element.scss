@@ -1,0 +1,7 @@
+// 由于element-plus样式按需引入，js引入组件的样式需要独立加载
+@import "element-plus/theme-chalk/src/loading.scss";
+@import "element-plus/theme-chalk/src/message.scss";
+@import "element-plus/theme-chalk/src/message-box.scss";
+@import "element-plus/theme-chalk/src/text.scss";
+@import "element-plus/theme-chalk/src/notification.scss";
+@import "element-plus/theme-chalk/src/progress.scss";

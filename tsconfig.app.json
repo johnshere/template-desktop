@@ -1,0 +1,28 @@
+{
+    "extends": "@vue/tsconfig/tsconfig.dom.json",
+    "include": [
+        "env.d.ts",
+        "src/**/*.vue",
+        "src/**/*",
+        "./auto-imports.d.ts",
+        "src/typings"
+    ],
+    "exclude": ["src/**/__tests__/*"],
+    "compilerOptions": {
+        "composite": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["./src/*"]
+        },
+        /* Bundler mode */
+        "moduleResolution": "node",
+        "allowImportingTsExtensions": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "preserve",
+        "experimentalDecorators": true,
+        "allowJs": true,
+        "types": ["node","element-plus/global","ui-base/esm/global"]
+    }
+}

@@ -1,0 +1,114 @@
+{
+    "name": "deposit-front",
+    "version": "1.0.0",
+    "private": true,
+    "packageManager": "pnpm@7.6.0",
+    "scripts": {
+        "dev": "vite",
+        "build": "pnpm type-check && pnpm build-only",
+        "deploy": "cloudbase framework:deploy",
+        "preview": "vite preview",
+        "test:unit": "vitest",
+        "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e'",
+        "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'",
+        "build-only": "vite build",
+        "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
+        "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+        "format": "prettier --write .",
+        "preinstall": "npx only-allow pnpm",
+        "prepare": "husky install",
+        "release": "release-it",
+        "generate": "tsc scripts/generate-routes.ts && node scripts/generate-routes.js && eslint src/router/index.ts --fix",
+        "u": "pnpm add ui-base@next-beta flexable@latest dictionary-configuration@latest",
+        "predev": "npm run u",
+        "prebuild": "npm run u"
+    },
+    "resolutions": {
+        "cheerio": "1.0.0-rc.12"
+    },
+    "dependencies": {
+        "@element-plus/icons-vue": "^2.3.1",
+        "@types/jszip": "^3.4.1",
+        "@vant/icons": "^3.0.2",
+        "axios": "^1.4.0",
+        "dayjs": "^1.11.9",
+        "dictionary-configuration": "^1.0.13",
+        "echarts": "^5.6.0",
+        "element-plus": "^2.9.6",
+        "file-saver": "^2.0.5",
+        "flexable": "^1.0.30",
+        "html2canvas": "^1.4.1",
+        "lodash": "^4.17.21",
+        "moment": "^2.30.1",
+        "moment-timezone": "^0.5.45",
+        "nprogress": "^0.2.0",
+        "pinia": "^2.1.3",
+        "qrcode": "^1.5.4",
+        "ui-base": "3.0.1-6",
+        "vant": "^4.9.18",
+        "vconsole": "^3.15.1",
+        "vite-plugin-qiankun": "^1.0.15",
+        "vite-plugin-vue-devtools": "^7.1.3",
+        "vue": "^3.3.4",
+        "vue-router": "^4.2.2"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^17.6.6",
+        "@commitlint/config-conventional": "^17.6.6",
+        "@release-it/conventional-changelog": "^7.0.0",
+        "@rushstack/eslint-patch": "^1.2.0",
+        "@tsconfig/node18": "^2.0.1",
+        "@types/file-saver": "^2.0.7",
+        "@types/jsdom": "^21.1.1",
+        "@types/lodash": "^4.17.7",
+        "@types/node": "^18.16.17",
+        "@types/nprogress": "^0.2.3",
+        "@types/qrcode": "^1.5.5",
+        "@vitejs/plugin-vue": "^4.4.0",
+        "@vitejs/plugin-vue-jsx": "^3.0.2",
+        "@vue/eslint-config-prettier": "^7.1.0",
+        "@vue/eslint-config-typescript": "^11.0.3",
+        "@vue/shared": "^3.3.4",
+        "@vue/test-utils": "^2.4.1",
+        "@vue/tsconfig": "^0.4.0",
+        "eslint": "^8.50.0",
+        "eslint-plugin-vue": "^9.17.0",
+        "husky": "^8.0.0",
+        "jsdom": "^22.1.0",
+        "lint-staged": "^13.2.3",
+        "pdfjs-dist": "2.9.359",
+        "postcss-pxtorem": "^6.1.0",
+        "prettier": "^2.8.8",
+        "release-it": "^16.1.2",
+        "rollup-plugin-copy": "^3.5.0",
+        "rollup-plugin-visualizer": "^5.12.0",
+        "sass": "^1.63.6",
+        "start-server-and-test": "^2.0.1",
+        "typescript": "^4.9.5",
+        "unplugin-auto-import": "^0.16.6",
+        "unplugin-vue-components": "^0.25.2",
+        "vite": "^4.3.9",
+        "vite-plugin-compression": "^0.5.1",
+        "vite-plugin-meta-env": "^1.0.2",
+        "vitest": "^0.34.6",
+        "vue-tsc": "^1.6.5"
+    },
+    "engines": {
+        "node": ">=16.0.0"
+    },
+    "lint-staged": {
+        "*.{js,jsx,ts,tsx,vue}": [
+            "npm run lint"
+        ]
+    },
+    "config": {
+        "commitizen": {
+            "path": "cz-conventional-changelog"
+        }
+    },
+    "commitlint": {
+        "extends": [
+            "@commitlint/config-conventional"
+        ]
+    }
+}
