@@ -1,0 +1,9 @@
+{
+  "files.eol": "\n",
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    ".gitignore": ".*",
+    "package.json": "pnpm-lock.yaml, pnpm-workspace.yaml, package-lock.json, npm-run.log",
+    "vite.config.ts": "tailwind.config.*, tsconfig.*"
+  }
+}

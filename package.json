@@ -76,6 +76,7 @@
         "husky": "^8.0.0",
         "jsdom": "^22.1.0",
         "lint-staged": "^13.2.3",
+        "only-allow": "^1.2.1",
         "pdfjs-dist": "2.9.359",
         "postcss-pxtorem": "^6.1.0",
         "prettier": "^2.8.8",
