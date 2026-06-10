@@ -1,28 +1,32 @@
 {
     "extends": "@vue/tsconfig/tsconfig.dom.json",
     "include": [
-        "env.d.ts",
         "src/**/*.vue",
-        "src/**/*",
+        "src/**/*.ts",
+        "src/**/*.tsx",
         "./auto-imports.d.ts",
-        "src/typings"
+        "./components.d.ts",
+        "./typed-router.d.ts",
+        "src/types/**/*.d.ts"
     ],
-    "exclude": ["src/**/__tests__/*"],
     "compilerOptions": {
         "composite": true,
         "baseUrl": ".",
         "paths": {
-            "@/*": ["./src/*"]
+            "@/*": ["./src/*"],
+            "@yzcfront/ui-base/*": ["./node_modules/@yzcfront/ui-base/*"]
         },
-        /* Bundler mode */
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "allowImportingTsExtensions": true,
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
         "jsx": "preserve",
-        "experimentalDecorators": true,
         "allowJs": true,
-        "types": ["node","element-plus/global","ui-base/esm/global"]
+        "types": [
+            "node",
+            "element-plus/global",
+            "@yzcfront/ui-base/esm/global"
+        ]
     }
 }

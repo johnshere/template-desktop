@@ -1,84 +1,99 @@
 import { fileURLToPath, URL } from 'node:url'
-import { ConfigEnv, defineConfig, loadEnv } from 'vite'
+import fs from 'node:fs'
+import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+// vue-router 5 内置约定式路由的 vite 插件（吸收了 unplugin-vue-router）
+import VueRouter from 'vue-router/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-import dayjs from 'dayjs'
-// 引入插件
 import VitePluginMetaEnv from 'vite-plugin-meta-env'
-// gzip压缩
 import { visualizer } from 'rollup-plugin-visualizer'
-// import viteCompression from 'vite-plugin-compression'
-// import viteImagemin from 'vite-plugin-imagemin'
-const { name: title, version: APP_VERSION } = require('./package.json')
+import checker from 'vite-plugin-checker'
 import qiankun from 'vite-plugin-qiankun'
 import VueDevTools from 'vite-plugin-vue-devtools'
-import copyPlugin from 'rollup-plugin-copy'
 
-// https://vitejs.dev/config/
-export default (configEnv: ConfigEnv) => {
-    const { mode } = configEnv
-    const env = loadEnv(mode, process.cwd())
-    // 增加环境变量
+const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
+const { name: title, version: APP_VERSION } = pkg as { name: string; version: string }
+
+// node_modules 分包映射：包名 → chunk 名
+// 易变（内部业务包，独立 chunk 便于增量发布）+ 不变（大依赖单独抽）
+const CHUNK_MAP: Record<string, string> = {
+    '@yzcfront/flexable': 'yzc-flexable',
+    '@yzcfront/request': 'yzc-request',
+    '@yzcfront/runtime-origin': 'yzc-runtime',
+    'element-plus': 'element-plus',
+    'lodash-es': 'lodash',
+    dayjs: 'dayjs'
+}
+
+export default defineConfig(({ command }) => {
+    const isDev = command === 'serve'
+
     const metaEnv = {
         APP_VERSION,
         APP_NAME: title,
-        APP_BUILD_TIME: dayjs().format('YYYY-MM-DD HH:mm:ss')
+        APP_BUILD_TIME: new Date().toISOString()
     }
 
-    return defineConfig({
-        // 设置打包路径
+    return {
         base: `/${title}/`,
-        // 插件
+        // 生产构建：移除 debugger、剥离非告警类 console（保留 warn/error）
+        esbuild: isDev
+            ? {}
+            : {
+                  pure: ['console.log', 'console.info', 'console.debug', 'console.trace'],
+                  drop: ['debugger']
+              },
         plugins: [
+            // 约定式路由：src/pages 文件即路由
+            VueRouter({
+                routesFolder: 'src/pages',
+                dts: './typed-router.d.ts'
+            }),
             vue(),
             vueJsx(),
-            // 按需导入
+            // vue-tsc + eslint 并行检查，不阻塞 HMR（替代 deprecated 的 vite-plugin-eslint）
+            checker({
+                vueTsc: true,
+                eslint: {
+                    lintCommand: 'eslint .',
+                    useFlatConfig: true
+                }
+            }),
             AutoImport({
                 resolvers: [ElementPlusResolver({ importStyle: 'sass' })],
-                // targets to transform
-                include: [
-                    /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
-                    /\.vue$/,
-                    /\.vue\?vue/, // .vue
-                    /\.md$/ // .md
+                include: [/\.[tj]sx?$/, /\.vue$/, /\.vue\?vue/, /\.md$/],
+                imports: [
+                    'vue',
+                    // unplugin-auto-import 内置 vue-router 预设
+                    'vue-router',
+                    'pinia',
+                    {
+                        from: 'vue',
+                        imports: ['Reactive'],
+                        type: true
+                    }
                 ],
-
-                // global imports to register
-                imports: ['vue', 'vue-router'],
-
-                // Filepath to generate corresponding .d.ts file.
-                // Defaults to './auto-imports.d.ts' when `typescript` is installed locally.
-                // Set `false` to disable.
                 dts: './auto-imports.d.ts',
-
-                // Inject the imports at the end of other imports
                 injectAtEnd: true,
-
-                // Generate corresponding .eslintrc-auto-import.json file.
-                // eslint globals Docs - https://eslint.org/docs/user-guide/configuring/language-options#specifying-globals
                 eslintrc: {
-                    enabled: true, // Default `false`
-                    filepath: './.eslintrc-auto-import.json' // Default `./.eslintrc-auto-import.json`
+                    enabled: true,
+                    filepath: './.eslintrc-auto-import.json',
+                    globalsPropValue: true
                 }
             }),
             Components({
                 resolvers: [ElementPlusResolver({ importStyle: 'sass' })]
             }),
-            // 环境变量
             VitePluginMetaEnv(metaEnv, 'import.meta.env'),
             VitePluginMetaEnv(metaEnv, 'process.env'),
-            qiankun(title, {
-                // 微应用名字，与主应用注册的微应用名字保持一致
-                useDevMode: true
-            }),
-            // https://github.com/webfansplz/vite-plugin-vue-devtools
-            VueDevTools(),
+            qiankun(title, { useDevMode: true }),
+            // VueDevTools 仅在 dev 启用，避免增大生产包
+            ...(isDev ? [VueDevTools()] : []),
             visualizer({ emitFile: true, filename: 'analysis.html' })
         ],
-        // 别名
         resolve: {
             alias: {
                 '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -87,109 +102,49 @@ export default (configEnv: ConfigEnv) => {
         css: {
             preprocessorOptions: {
                 scss: {
-                    additionalData: `@use "@/assets/style/element-namespace.scss" as *;`,
-                    api: 'modern-compiler',
-                    quietDeps: true,
-                    silenceDeprecations: ['legacy-js-api']
+                    additionalData: `@use "@/assets/style/element-namespace.scss" as *;`
                 }
-            }
+            },
+            devSourcemap: true
         },
-        // 打包配置
         build: {
             sourcemap: false,
             rollupOptions: {
                 output: {
-                    chunkFileNames: 'js/[name]-[hash].js', // 引入文件名的名称
-                    entryFileNames: 'js/[name]-[hash].js', // 包的入口文件名称
-                    assetFileNames: '[ext]/[name]-[hash].[ext]', // 资源文件像 字体，图片等
-                    // entryFileNames: 'main-app.js',
+                    chunkFileNames: 'js/[name]-[hash].js',
+                    entryFileNames: 'js/[name]-[hash].js',
+                    assetFileNames: '[ext]/[name]-[hash].[ext]',
                     manualChunks(id, { getModuleInfo }) {
-                        // 打包依赖
                         if (id.includes('node_modules')) {
-                            // 可能频繁更新
-                            let ks = 'print-page,ui-base,flexable'
-                            // 不会更新
-                            ks +=
-                                ',element-plus,lodash,jspdf,jszip,exceljs,moment,html2canvas,vconsole,pdfjs-dist,echarts,tinymce'
-                            for (const k of ks.split(',')) {
-                                if (id.includes(k)) return k
+                            for (const [pkgName, chunk] of Object.entries(CHUNK_MAP)) {
+                                if (id.includes(`/node_modules/${pkgName}/`)) return chunk
                             }
                             return 'vendor'
                         }
-                        const comReg = /(.*)\/src\/components\/(.*)/
-                        if (comReg.test(id)) {
-                            const len = getModuleInfo(id)?.importers.length || 0
-                            if (len > 1) return 'common'
+                        if (id.includes('/src/components/')) {
+                            const importers = getModuleInfo(id)?.importers.length || 0
+                            if (importers > 1) return 'common'
                         }
-                        // 切分路由文件
-                        // const routeReg = /.*\/src\/views\/(.*)\/index.vue/
-                        // if (routeReg.test(id)) {
-                        //     const [_, path] = routeReg.exec(id) || ['', '']
-                        //     if (path) return 'views-' + path.toLocaleLowerCase().replaceAll('/', '-')
-                        // }
                     }
-                },
-                plugins: [
-                    // build.rollupOptions.plugins[]
-                    // viteCompression({
-                    //     verbose: true, // 是否在控制台中输出压缩结果
-                    //     disable: false,
-                    //     threshold: 10240, // 如果体积大于阈值，将被压缩，单位为b，体积过小时请不要压缩，以免适得其反
-                    //     algorithm: 'gzip', // 压缩算法，可选['gzip'，' brotliccompress '，'deflate '，'deflateRaw']
-                    //     ext: '.gz',
-                    //     deleteOriginFile: true // 源文件压缩后是否删除(我为了看压缩后的效果，先选择了true)
-                    // })
-                    // 参数及配置：https://github.com/vbenjs/vite-plugin-imagemin/blob/main/README.zh_CN.md
-                    // viteImagemin({
-                    //     gifsicle: {
-                    //         optimizationLevel: 7,
-                    //         interlaced: false
-                    //     },
-                    //     optipng: {
-                    //         optimizationLevel: 7
-                    //     },
-                    //     mozjpeg: {
-                    //         quality: 20
-                    //     },
-                    //     pngquant: {
-                    //         quality: [0.8, 0.9],
-                    //         speed: 4
-                    //     },
-                    //     svgo: {
-                    //         plugins: [
-                    //             {
-                    //                 name: 'removeViewBox'
-                    //             },
-                    //             {
-                    //                 name: 'removeEmptyAttrs',
-                    //                 active: false
-                    //             }
-                    //         ]
-                    //     }
-                    // })
-                    copyPlugin({
-                        targets: [{ src: 'node_modules/pdfjs-dist/build/pdf.worker.min.js', dest: 'public' }]
-                    })
-                ]
+                }
             }
         },
-        // 本地服务配置
         server: {
-            headers: {
-                'Access-Control-Allow-Origin': '*'
-            },
+            headers: { 'Access-Control-Allow-Origin': '*' },
             cors: true,
             open: false,
-            port: 5006,
+            port: 6096,
             host: true,
             proxy: {
                 '/gateway': {
-                    // target: 'https://portal.youzhicai.com',
-                    // target: 'https://portal.uzhicai.com',
                     target: 'https://portal.ukzhicai.com',
                     changeOrigin: true
                 }
+            },
+            // 预热全部页面/组件 .vue，规避 components.d.ts 按需 transform 缩水
+            warmup: {
+                clientFiles: ['./src/pages/**/*.vue', './src/components/**/*.vue']
             }
         }
-    })
-}
+    }
+})

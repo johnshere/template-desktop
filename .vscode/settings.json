@@ -1,9 +1,36 @@
 {
-  "files.eol": "\n",
-  "explorer.fileNesting.enabled": true,
-  "explorer.fileNesting.patterns": {
-    ".gitignore": ".*",
-    "package.json": "pnpm-lock.yaml, pnpm-workspace.yaml, package-lock.json, npm-run.log",
-    "vite.config.ts": "tailwind.config.*, tsconfig.*"
-  }
+    "files.eol": "\n",
+
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+        ".gitignore": ".gitattributes, .editorconfig, .prettier*, .eslint*, .npmrc",
+        "package.json": "pnpm-lock.yaml, pnpm-workspace.yaml, .husky*, commitlint.config.*",
+        "vite.config.ts": "tsconfig.*, postcss.config.*, eslint.config.*, ytt.config.*, auto-imports.d.ts, components.d.ts, typed-router.d.ts, .eslintrc-auto-import.json",
+        "README.md": "CLAUDE.md, CLAUDE.local.md, CHANGELOG.md"
+    },
+
+    "typescript.tsdk": "node_modules/typescript/lib",
+
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+
+    "[vue]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "[scss]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+    "eslint.useFlatConfig": true,
+    "eslint.validate": [
+        "javascript",
+        "typescript",
+        "vue",
+        "javascriptreact",
+        "typescriptreact"
+    ]
 }

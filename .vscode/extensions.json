@@ -1,35 +1,23 @@
 {
-	"recommendations": [
-		"afzalsayed96.icones",
-		"antfu.iconify",
-		"antfu.unocss",
-		"christian-kohler.path-intellisense",
-		"coenraads.bracket-pair-colorizer-2",
-		"dariofuzinato.vue-peek",
-		"dbaeumer.vscode-eslint",
-		"dsznajder.es7-react-js-snippets",
-		"eamodio.gitlens",
-		"editorconfig.editorconfig",
-		"esbenp.prettier-vscode",
-		"formulahendry.auto-complete-tag",
-		"formulahendry.auto-close-tag",
-		"formulahendry.auto-rename-tag",
-		"jimdong.naive-ui-snippets",
-		"kisstkondoros.vscode-gutter-preview",
-		"lokalise.i18n-ally",
-		"mhutchie.git-graph",
-		"miguelsolorio.fluent-icons",
-		"mikestead.dotenv",
-		"naumovs.color-highlight",
-		"pkief.material-icon-theme",
-		"pranaygp.vscode-css-peek",
-		"ritwickdey.liveserver",
-		"steoates.autoimport",
-		"vue.volar",
-		"vue.vscode-typescript-vue-plugin",
-		"whtouche.vscode-js-console-utils",
-		"xabikos.javascriptsnippets",
-		"yzhang.markdown-all-in-one",
-		"zhuangtongfa.material-theme"
-	]
+    "recommendations": [
+        "vue.volar",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "editorconfig.editorconfig",
+        "christian-kohler.path-intellisense",
+        "formulahendry.auto-rename-tag",
+        "formulahendry.auto-close-tag",
+        "pranaygp.vscode-css-peek",
+        "dariofuzinato.vue-peek",
+        "naumovs.color-highlight",
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+        "pkief.material-icon-theme"
+    ],
+    "unwantedRecommendations": [
+        "octref.vetur",
+        "steoates.autoimport",
+        "coenraads.bracket-pair-colorizer-2",
+        "vue.vscode-typescript-vue-plugin"
+    ]
 }

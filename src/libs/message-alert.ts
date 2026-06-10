@@ -1,55 +1,25 @@
-import {
-    ElMessage,
-    ElMessageBox,
-    type ElMessageBoxOptions,
-    type ElMessageBoxShortcutMethod,
-    type IElMessageBox,
-    type MessageBoxData,
-    type MessageBoxType
-} from 'element-plus'
-import type { AppContext } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import type { MessageOptions } from 'element-plus'
 
-export const alertError = (message: string) => {
-    return ElMessage.error(message)
+type AlertLevel = 'success' | 'warning' | 'info' | 'error'
+
+function alert(level: AlertLevel, message: string, opts?: Partial<MessageOptions>) {
+    return ElMessage({ message, type: level, ...opts })
 }
 
-export const alertSuccess = (message: string) => {
-    return ElMessage.success(message)
+export const alertSuccess = (message: string, opts?: Partial<MessageOptions>) => alert('success', message, opts)
+export const alertWarning = (message: string, opts?: Partial<MessageOptions>) => alert('warning', message, opts)
+export const alertInfo = (message: string, opts?: Partial<MessageOptions>) => alert('info', message, opts)
+export const alertError = (message: string, opts?: Partial<MessageOptions>) => alert('error', message, opts)
+
+type MsgBoxOptions = Parameters<typeof ElMessageBox.confirm>[2]
+
+export function msgBoxConfirm(message: string, title = '确认', opts?: MsgBoxOptions) {
+    // eslint-disable-next-line no-restricted-syntax
+    return ElMessageBox.confirm(message, title, { type: 'warning', ...opts })
 }
 
-export const alertWarning = (message: string) => {
-    return ElMessage.warning(message)
+export function msgBoxAlert(message: string, title = '提示', opts?: MsgBoxOptions) {
+    // eslint-disable-next-line no-restricted-syntax
+    return ElMessageBox.alert(message, title, opts)
 }
-
-export const alertInfo = (message: string) => {
-    return ElMessage.info(message)
-}
-
-const _msgBox = function (options: ElMessageBoxOptions, appContext?: AppContext | null): Promise<MessageBoxData> {
-    return ElMessageBox(options, appContext)
-}
-const msgBoxFnFactory = (type: MessageBoxType, ops: ElMessageBoxOptions = {}) => {
-    return function (...args) {
-        const [message, title, options, appContext] = args
-        let appCtx: AppContext | null = null
-        let conf = {} as ElMessageBoxOptions
-        if (typeof title === 'object') {
-            conf = Object.assign({ message }, ops, title)
-            appCtx = options as AppContext
-        } else {
-            conf = Object.assign({}, ops, { message, title, ...options })
-            if (!conf.title) conf.title = '提示'
-            appCtx = appContext as AppContext
-        }
-        Object.assign(conf, { type })
-        return ElMessageBox(conf, appCtx)
-    } as ElMessageBoxShortcutMethod
-}
-export const msgBoxAlert = (_msgBox.alert = msgBoxFnFactory('alert'))
-export const msgBoxConfirm = (_msgBox.confirm = msgBoxFnFactory('confirm', { showCancelButton: true }))
-export const msgBoxPrompt = (_msgBox.prompt = msgBoxFnFactory('prompt'))
-export const msgBoxClose = (_msgBox.close = () => ElMessageBox.close())
-_msgBox._context = null as any
-
-export const msgBox = _msgBox as IElMessageBox
-export const messageBox = _msgBox as IElMessageBox

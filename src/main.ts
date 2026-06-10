@@ -1,52 +1,44 @@
 import './assets/style/main.scss'
-import './libs/flexable'
-import { createApp } from 'vue'
+import '@/libs/flexable'
+
+import { createApp, type App } from 'vue'
 import { createPinia } from 'pinia'
-import App from './App.vue'
+import { renderWithQiankun, type QiankunProps } from 'vite-plugin-qiankun/dist/helper'
+
+import appvue from './App.vue'
 import { setupRouter } from './router'
-import { renderWithQiankun } from 'vite-plugin-qiankun/dist/helper'
-import { log, isMicroApp } from '@/libs'
-import directives from '@/api/directives'
-import UIBase from 'ui-base'
-import vant from 'vant'
-import 'vant/lib/index.css'
-// import 'vant/lib/icon/local.css'
+import setupComponents from './setup-components'
+import { isMicroApp, log } from '@/libs'
 
 log()
 
-const app = createApp(App)
+let app: App<Element>
 
-async function setupApp(rootContainer: Element | string) {
-    app.use(UIBase)
-    app.use(vant)
+async function setupApp(props?: QiankunProps) {
+    app = createApp(appvue)
     app.use(createPinia())
-    app.use(directives)
-    // vue router
-    await setupRouter(app)
-    app.mount(rootContainer)
+    app.use(setupComponents)
+    await setupRouter(app, !!props)
+    const container = props?.container?.querySelector('#bidagent-app')
+    app.mount(container || '#bidagent-app')
 }
 
 if (!isMicroApp()) {
-    // 独立运行时
-    setupApp('#deposit-app')
+    setupApp()
 } else {
     renderWithQiankun({
         mount(props) {
-            console.log('[vue] props from main framework', props)
-            if (props.container) {
-                setupApp(props.container.querySelector('#deposit-app') as Element)
-            } else {
-                setupApp('#deposit-app')
-            }
+            console.log('[bidagent] qiankun mount', props)
+            setupApp(props)
         },
         bootstrap() {
-            console.log('[vue] vue app bootstraped')
+            console.log('[bidagent] qiankun bootstrap')
         },
         update() {
-            console.log('[vue] vue app update')
+            console.log('[bidagent] qiankun update')
         },
         unmount() {
-            console.log('[vue] vue app unmount')
+            console.log('[bidagent] qiankun unmount')
             app?.unmount()
         }
     })

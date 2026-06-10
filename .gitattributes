@@ -1,1 +1,7 @@
-* text=auto eol=lf
+# 自动生成的 .d.ts 用 union 合并，缓解多人协作冲突
+auto-imports.d.ts merge=union
+components.d.ts merge=union
+typed-router.d.ts merge=union
+
+# 锁文件：合并冲突时优先取较新行
+pnpm-lock.yaml merge=binary

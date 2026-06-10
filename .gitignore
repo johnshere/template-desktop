@@ -7,24 +7,31 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# 依赖与构建产物
 node_modules
-.DS_Store
 dist
 dist-ssr
-coverage
+.DS_Store
 *.local
-components.d.ts
 
-/cypress/videos/
-/cypress/screenshots/
-
-# Editor directories and files
+# 编辑器
 .idea
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-pnpm-lock.yaml
-package-lock.json
-public/pdf.worker.min.js
+
+# 自动生成
+.eslintrc-auto-import.json
+analysis.html
+
+# Claude 临时文件
+.claude/temp/
+CLAUDE.local.md
+
+# 工程临时文件
+nul
+snapshot.txt
+
+# 注意：pnpm-lock.yaml 必须入库，不要加进来

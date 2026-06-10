@@ -1,3 +1,2 @@
-@forward 'element-plus/theme-chalk/src/mixins/config.scss' with (
-    $namespace: 'eu'
-);
+// 自动注入到所有 SCSS 文件，用于覆盖 Element Plus 命名空间或共享变量
+$namespace: 'el';
