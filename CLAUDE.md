@@ -1,6 +1,18 @@
-# BidAgent 前端工程
+# Vue 桌面端工程模板
 
-投标 AI Agent 前端，qiankun 子应用形态。
+基于 Vue 3 + Vite 的桌面端 SPA 模板，自带 qiankun 子应用支持、Element Plus、@yzcfront/ui-base 与一套约定式 layout。
+
+## 使用本模板
+
+1. **全局替换工程名**：模板里到处有 `bidagent` 字样（package.json 的 name、qiankun 子应用名、base path、DOM 容器 id 等），先全局替换成你的工程名（建议小写无连字符）：
+   ```bash
+   git grep -l bidagent | xargs sed -i 's/bidagent/your-app/g'
+   ```
+   这会一次性更新 `package.json`、`index.html`、`main.ts`、`App.vue`、`vite.config.ts`、ESLint 规约（`append-to` 的 id）等。
+2. **改 `vite.config.ts` 的 proxy.target** 指向你的网关；调整 `server.port` 避免端口冲突。
+3. **删示例 layout**：`src/pages/(default)/`、`auth/`、`admin/` 是 demo，可按需保留扩展或删除。
+4. **`.npmrc` 私服**：默认 `@yzcfront/*` 走公司 nexus，不用私包就把那行删掉。
+5. **CLAUDE.md 自身**：删掉本"使用本模板"小节，把下面的"本模板"改成"本工程"。
 
 ## 启动命令
 
@@ -20,7 +32,7 @@ pnpm release        # release-it 出 CHANGELOG + 打 tag
 - Vue 3.5 + Vite 7 + TypeScript 5.9
 - vue-router 5（**约定式路由**，由 vue-router 内置的 `vue-router/vite` 插件生成）
 - Pinia 状态管理
-- Element Plus（按需导入）
+- Element Plus（按需导入）+ @yzcfront/ui-base（U 系列业务组件）
 - qiankun 微前端（vite-plugin-qiankun）
 - dayjs 日期库
 - SCSS + postcss-pxtorem（rem 适配）
@@ -33,7 +45,7 @@ pnpm release        # release-it 出 CHANGELOG + 打 tag
 src/
 ├── main.ts                 应用入口（含 qiankun 生命周期）
 ├── App.vue                 根组件
-├── setup-components.ts     全局组件 / 指令注册位
+├── setup-components.ts     全局组件 / 指令注册位（已挂 @yzcfront/ui-base）
 ├── pages/                  约定式路由：文件即路由
 │   └── index.vue           → /
 ├── components/             业务组件
@@ -50,7 +62,7 @@ src/
 
 `src/pages/**/*.vue` → 自动生成路由：
 
-### 工程现有 layout 分组
+### 模板现有 layout 分组
 
 | 文件 | URL | layout |
 |---|---|---|
@@ -121,7 +133,7 @@ router.push('/test/123')   // 字符串形式校验路径前缀
 | `ElMessage.xxx` | `@/libs` 的 `alertSuccess / alertWarning / alertInfo / alertError` |
 | `ElMessageBox.xxx` | `@/libs` 的 `msgBoxConfirm / msgBoxAlert` |
 | `top` 全局 | `@/libs` 的 `getTopWin()` |
-| Dialog `append-to-body` | 改用 `append-to="#bidagent-app"` |
+| Dialog `append-to-body` | 改用 `append-to="#<app>-app"`（替换模板时同步） |
 
 ## 样式约定
 
@@ -154,9 +166,9 @@ registry=https://registry.npmmirror.com/
 
 ## 工程化决策记录
 
-基于对 `yzc_bidclear_front` 工程化的复盘，本工程做了以下调整：
+基于对 `yzc_bidclear_front` 工程化的复盘，本模板做了以下调整：
 
-| 决策 | 原工程 | 本工程 |
+| 决策 | 原工程 | 本模板 |
 |---|---|---|
 | 路由生成 | 自研 `scripts/generate-routes.ts` | vue-router 5 内置约定式（`vue-router/vite`） |
 | ESLint 集成 | `vite-plugin-eslint`（已 deprecated） | `vite-plugin-checker`（同时挂 vue-tsc + eslint） |
