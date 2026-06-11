@@ -26,6 +26,9 @@ dist-ssr
 .eslintrc-auto-import.json
 analysis.html
 
+# TS 增量编译缓存
+*.tsbuildinfo
+
 # Claude 临时文件
 .claude/temp/
 CLAUDE.local.md

@@ -50,9 +50,28 @@ src/
 
 `src/pages/**/*.vue` → 自动生成路由：
 
-| 文件 | 路由 |
+### 工程现有 layout 分组
+
+| 文件 | URL | layout |
+|---|---|---|
+| `pages/(default).vue` | `/` 系列父路由 | 默认前台 layout（顶栏 + 内容区） |
+| `pages/(default)/index.vue` | `/` | — |
+| `pages/auth.vue` | `/auth/*` 父路由 | 认证 layout（居中卡片） |
+| `pages/auth/login.vue` | `/auth/login` | — |
+| `pages/admin.vue` | `/admin/*` 父路由 | 后台 layout（左侧栏） |
+| `pages/admin/dashboard.vue` | `/admin/dashboard` | — |
+
+**为什么默认 layout 用 `(default)` 括号语法、其它用普通文件夹**：
+
+- `(name).vue` 是 vue-router 5 的**分组语法**，URL 不带 `(name)`，路由父级 path 是 `/`；
+- `name.vue + name/` 是 vue-router 5 的**嵌套路由**，URL 带 `/name` 前缀；
+- **多个分组父路由共用 path `/` 会冲突**（按字母序匹配，错位渲染 layout）；
+- 所以约定：**默认 layout 用 `(group)` 占住根路径，其它 layout 都用 URL prefix**。
+
+### 一般约定式路由
+
+| 文件 | URL |
 |---|---|
-| `pages/index.vue` | `/` |
 | `pages/chat.vue` | `/chat` |
 | `pages/chat/[sessionId].vue` | `/chat/:sessionId` |
 | `pages/settings/account.vue` | `/settings/account` |
